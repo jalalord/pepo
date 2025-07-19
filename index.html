@@ -1,249 +1,113 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مبروك يا حبيبة</title>
-  <!-- Google Fonts: Cairo for Arabic text -->
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS CDN for modern styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة بيبو</title>
   <style>
-    /* Custom styles for background animation and specific elements not easily done with Tailwind */
     body {
-      font-family: 'Cairo', sans-serif; /* Apply Cairo font to the whole body */
-      direction: rtl; /* Right-to-left for Arabic text */
+      margin: 0;
+      padding: 20px 0 0 0; /* أضفنا padding-top هنا */
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Keyframes for a subtle background gradient animation */
-    @keyframes gradientAnimation {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .emoji-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      max-width: 400px;
     }
 
-    /* Apply the animation to the body */
-    .animated-background {
-      background: linear-gradient(-45deg, #0d1b2a, #1b263b, #283747, #415a77);
-      background-size: 400% 400%;
-      animation: gradientAnimation 15s ease infinite;
+    .emoji {
+      font-size: 2.5rem;
+      margin: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
 
-    /* Custom styles for image flip using preserve-3d */
-    .flip-card {
-      perspective: 1000px; /* Gives the 3D effect */
+    .emoji.clicked {
+      opacity: 0.4;
+      pointer-events: none;
+      transform: scale(1.3) rotate(10deg);
     }
 
-    .flip-card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
+    .message {
+      font-size: 2rem;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #fff8e1;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      display: none;
       text-align: center;
-      transition: transform 0.8s; /* Smooth flip animation */
-      transform-style: preserve-3d; /* Keep children in 3D space */
+      word-break: break-word;
     }
 
-    .flip-card.flipped .flip-card-inner {
-      transform: rotateY(180deg); /* Rotate when flipped */
-    }
+    @media (max-width: 500px) {
+      .emoji {
+        font-size: 2rem;
+        margin: 8px;
+      }
 
-    .flip-card-front, .flip-card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      -webkit-backface-visibility: hidden; /* Hide back of element during flip */
-      backface-visibility: hidden;
-      border-radius: 9999px; /* Full rounded for circular image */
-      overflow: hidden; /* Ensures content stays within circle */
-    }
-
-    .flip-card-back {
-      transform: rotateY(180deg); /* Position back face to be visible after flip */
-    }
-
-    /* Confetti canvas styling */
-    .confetti-canvas {
-      position: fixed; /* Fixed position to cover the whole viewport */
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none; /* Allows clicks to pass through */
-      z-index: 50; /* Above other content but below messages */
+      .message {
+        font-size: 1.5rem;
+        padding: 8px 16px;
+      }
     }
   </style>
 </head>
-<body class="animated-background flex flex-col items-center justify-center min-h-screen text-white p-4 overflow-hidden">
+<body>
 
-  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+  <h2>اختاري كل الإيموجي اللي قدامك دي بالترتيب، يعني اللي بتحبيه أكتر في الأول 😉</h2>
 
-  <div class="container flex flex-col items-center justify-center space-y-8 z-10">
-    <!-- Click Me Prompt -->
-    <div id="clickPrompt" class="text-xl md:text-2xl font-bold bg-white text-blue-800 py-2 px-6 rounded-full shadow-lg transition-opacity duration-500 opacity-100">
-      دوسي على القمر يا قمر!
-    </div>
-
-    <!-- Image Flip Container -->
-    <div id="imageFlipCard" class="flip-card w-64 h-64 md:w-80 md:h-80 rounded-full shadow-2xl cursor-pointer transform hover:scale-105 transition-transform duration-300 relative">
-      <div class="flip-card-inner">
-        <!-- Front of the card (initial image) -->
-        <div class="flip-card-front flex items-center justify-center bg-gray-800">
-          <img src="https://placehold.co/250x250/0d1b2a/ffffff?text=القمر"
-               onerror="this.onerror=null;this.src='https://placehold.co/250x250/0d1b2a/ffffff?text=القمر';"
-               id="mainImage"
-               alt="القمر"
-               class="w-full h-full object-cover rounded-full">
-        </div>
-        <!-- Back of the card (certificate image) -->
-        <div class="flip-card-back flex items-center justify-center bg-gray-800">
-          <img src="https://placehold.co/250x250/1b263b/ffffff?text=الشهادة"
-               onerror="this.onerror=null;this.src='https://placehold.co/250x250/1b263b/ffffff?text=الشهادة';"
-               id="certificateImage"
-               alt="الشهادة"
-               class="w-full h-full object-cover rounded-full">
-        </div>
-      </div>
-    </div>
-
-    <!-- Message -->
-    <div id="message" class="message text-3xl md:text-5xl font-extrabold text-center transition-opacity duration-1000 opacity-0 mt-8 drop-shadow-lg">
-      ألف مبروك النجااااااااااااااااح يا بيبو! 🌟🌙
-    </div>
-  </div>
+  <div class="emoji-container" id="emojiContainer"></div>
+  <div class="message" id="message"></div>
 
   <script>
-    const imageFlipCard = document.getElementById('imageFlipCard');
-    const mainImage = document.getElementById('mainImage');
-    const certificateImage = document.getElementById('certificateImage');
-    const message = document.getElementById('message');
-    const clickPrompt = document.getElementById('clickPrompt');
-    let flipped = false;
+    const emojis = ["😂", "❤️", "😇", "😭", "😔", "😒", "😎", "😉", "🥰", "😍"];
+    const clickedEmojis = [];
+    const emojiContainer = document.getElementById('emojiContainer');
+    const messageDiv = document.getElementById('message');
+    const baseMessage = "صباح الخير يا بيبو";
 
-    // Preload images to avoid flickers
-    const img1 = new Image();
-    img1.src = 'moon.png'; // Replace with actual moon image path
-    const img2 = new Image();
-    img2.src = 'certificate.jpg'; // Replace with actual certificate image path
+    const shuffledEmojis = emojis.sort(() => 0.5 - Math.random());
 
-    // Set the actual image sources once they are loaded
-    img1.onload = () => {
-      mainImage.src = img1.src;
-    };
-    img2.onload = () => {
-      certificateImage.src = img2.src;
-    };
-
-    imageFlipCard.addEventListener('click', () => {
-      if (!flipped) {
-        imageFlipCard.classList.add('flipped'); // Add flipped class to trigger CSS animation
-        clickPrompt.classList.add('opacity-0'); // Fade out the prompt
-
-        setTimeout(() => {
-          message.classList.add('opacity-100'); // Make message visible
-          launchConfetti(); // Launch confetti
-        }, 800); // Slightly before flip completes for better sync
-
-        flipped = true;
-      }
+    shuffledEmojis.forEach(emoji => {
+      const span = document.createElement("span");
+      span.classList.add("emoji");
+      span.textContent = emoji;
+      span.addEventListener("click", () => {
+        if (!span.classList.contains("clicked")) {
+          span.classList.add("clicked");
+          clickedEmojis.push(emoji);
+          if (clickedEmojis.length === emojis.length) {
+            showMessage();
+          }
+        }
+      });
+      emojiContainer.appendChild(span);
     });
 
-    // Confetti code (enhanced effect)
-    const confettiCanvas = document.getElementById('confettiCanvas');
-    const ctx = confettiCanvas.getContext('2d');
-    let confettis = [];
-    const numConfetti = 200; // More confetti!
-
-    function resizeCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-
-    // Initial resize and on window resize
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Confetti particle class for better organization
-    class ConfettiParticle {
-      constructor(x, y, radius, color, velocityX, velocityY, rotationSpeed) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.color = color;
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed = rotationSpeed;
-        this.alpha = 1;
-        this.gravity = 0.1; // Subtle gravity effect
-        this.friction = 0.99; // Air resistance
-      }
-
-      draw() {
-        ctx.save(); // Save current canvas state
-        ctx.translate(this.x, this.y); // Move origin to confetti position
-        ctx.rotate(this.rotation); // Rotate the confetti
-        ctx.globalAlpha = this.alpha; // Apply transparency
-
-        ctx.beginPath();
-        // Draw a simple square confetti for variety
-        ctx.rect(-this.radius / 2, -this.radius / 2, this.radius, this.radius);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.restore(); // Restore canvas state
-      }
-
-      update() {
-        this.velocityY += this.gravity; // Apply gravity
-        this.velocityX *= this.friction; // Apply friction
-        this.velocityY *= this.friction; // Apply friction
-
-        this.x += this.velocityX;
-        this.y += this.velocityY;
-        this.rotation += this.rotationSpeed;
-
-        // Fade out as it falls
-        if (this.y > confettiCanvas.height / 2) {
-          this.alpha -= 0.01;
-          if (this.alpha < 0) this.alpha = 0;
+    function showMessage() {
+      let result = "";
+      for (let i = 0; i < baseMessage.length; i++) {
+        result += baseMessage[i];
+        if (clickedEmojis[i]) {
+          result += clickedEmojis[i];
         }
       }
-    }
-
-    function launchConfetti() {
-      confettis = []; // Clear existing confetti
-      for (let i = 0; i < numConfetti; i++) {
-        const x = Math.random() * confettiCanvas.width;
-        const y = Math.random() * confettiCanvas.height - confettiCanvas.height; // Start above screen
-        const radius = Math.random() * 5 + 3; // Size between 3 and 8
-        const color = `hsl(${Math.random() * 360}, 100%, 70%)`; // Brighter colors
-        const velocityX = (Math.random() - 0.5) * 10; // Random horizontal velocity
-        const velocityY = Math.random() * 8 + 5; // Initial upward/downward velocity
-        const rotationSpeed = (Math.random() - 0.5) * 0.2; // Random rotation speed
-
-        confettis.push(new ConfettiParticle(x, y, radius, color, velocityX, velocityY, rotationSpeed));
-      }
-      animateConfetti(); // Start the animation loop
-    }
-
-    function animateConfetti() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height); // Clear canvas
-
-      for (let i = confettis.length - 1; i >= 0; i--) {
-        const particle = confettis[i];
-        particle.update();
-        particle.draw();
-
-        // Remove confetti that has faded out or fallen off screen
-        if (particle.alpha <= 0 || particle.y > confettiCanvas.height + particle.radius) {
-          confettis.splice(i, 1);
-        }
-      }
-
-      // If there's still confetti, continue animation
-      if (confettis.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      }
+      messageDiv.textContent = result;
+      messageDiv.style.display = 'block';
     }
   </script>
+
 </body>
 </html>
